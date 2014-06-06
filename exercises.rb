@@ -59,7 +59,11 @@ module Exercises
   #    it to 'GODZILLA' instead
   def self.ex6(array)
     # TODO
-    array[-1] == 'panda' ? array[-1] = 'GODZILLA' : array[-1] == 'panda'
+    if array[-1] == 'panda' 
+      array[-1] = 'GODZILLA'
+    else 
+      array[-1] = 'panda'
+    end
   end
 
   # Exercise 7
@@ -96,7 +100,7 @@ module Exercises
     if year % 4 == 0 && (year % 400 == 0 || year % 100 != 0)
       return true
     end
-    return false
+      return false
   end
 end
 

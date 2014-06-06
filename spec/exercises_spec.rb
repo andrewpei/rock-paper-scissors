@@ -56,7 +56,7 @@ end
 
 describe "Exercise 5" do
   
-  it "" do
+  it "prints out each element" do
 
   end
 end
@@ -64,13 +64,15 @@ end
 describe "Exercise 6" do
   
   it "updates the last element in the array to panda" do
-    result = Exercises.ex6([1,2,3,4])
-    expect(result).to eq('panda')
+    arr = [1,2,3,4]
+    Exercises.ex6(arr)
+    expect(arr[-1]).to eq('panda')
   end
 
   it "if the last element is panda it changes the last element to godzilla" do
-    result = Exercises.ex6([1,2,3,'panda'])
-    expect(result).to eq('GODZILLA')
+    arr = [1,2,3,'panda']
+    Exercises.ex6(arr)
+    expect(arr[-1]).to eq('GODZILLA')
   end
 
 end
@@ -78,34 +80,48 @@ end
 describe "Exercise 7" do
   
   it "expects that if the string exists in the array that it will be added to the end" do
-
+    arr = ["a","b","c"]
+    Exercises.ex7(arr, "a")
+    expect(arr[-1]).to eq('a')
   end
 
   it "expects if the string is not in the array that nothing happens" do
-
+    arr = ["a","b","c"]
+    Exercises.ex7(arr, "z")
+    expect(arr[-1]).to eq('c')
   end
 end
 
 describe "Exercise 8" do
-  
   it "" do
 
   end
-
-  it "" do
-
-  end
-
 end
 
 describe "Exercise 9" do
   
-  it "" do
-
+  it "doesn't think it's a leap year if the year is divisible by 100 but not 400" do
+    year = Time.new(2100)
+    result = Exercises.ex9(year)
+    expect(result).to eq(false)
   end
 
-  it "" do
+  it "is a leap year if the year is divisible by 400" do
+    year = Time.new(2000)
+    result = Exercises.ex9(year)
+    expect(result).to eq(true)
+  end
 
+  it "is a leap year for a year divisible by 4" do
+    year = Time.new(2004)
+    result = Exercises.ex9(year)
+    expect(result).to eq(true)
+  end
+
+  it "doesn't think its a leap year on a normal year" do
+    year = Time.new(1997)
+    result = Exercises.ex9(year)
+    expect(result).to eq(false)
   end
 
 end
