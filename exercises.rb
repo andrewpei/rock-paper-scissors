@@ -119,12 +119,54 @@ class RPS
   # You will be using this class in the following class, which will let players play
   # RPS through the terminal.
 
+  attr_reader :player1, :player2
+  attr_reader :player1score, :player2score
+  
+  def initialize(player1, player2)
+    @player1 = player1
+    @player2 = player2
+    @player1score = 0
+    @player2score = 0
+  end
 
+  def play(move1,move2)
+    outcomes = {
+      "rock"     => {"rock" => :draw, "paper" => @player2, "scissors" => @player1},
+      "paper"    => {"rock"=> @player1, "paper"  => :draw, "scissors" => @player2},
+      "scissors" => {"rock"=> @player2, "paper"  => @player1, "scissors" => :draw}
+    }
+
+    winner = outcomes[move1][move2]
+
+    if winner == @player1
+      @player1score += 1
+      puts "#{@player1} wins the round! The score is now #{@player1score} to #{@player2score}"
+    elsif winner == @player2
+      @player2score += 1
+      puts "#{@player2} wins the round! The score is now #{@player1score} to #{@player2score}"
+    else
+      puts "The round was a draw!"
+    end
+
+    if @player1score == 2
+      puts "#{@player1} wins the match! Better luck next time #{@player2}"
+      @player1score = 0
+      return false
+    elsif @player2score == 2
+      puts "#{@player2} wins the match! Better luck next time #{@player1}"
+      @player2score = 0 
+      return false
+    end
+
+    return true
+    
+  end
 end
 
 
 require 'io/console'
 class RPSPlayer
+
   # (No specs are required for RPSPlayer)
   #
   # Complete the `start` method so that it uses your RPS class to present
@@ -137,6 +179,7 @@ class RPSPlayer
   # When the game ends, ask if the player wants to play again.
   def start
 
+
     # TODO
 
     # PRO TIP: Instead of using plain `gets` for grabbing a player's
@@ -144,6 +187,20 @@ class RPSPlayer
     #          what the player is typing! :D
     # This is also why we needed to require 'io/console'
     # move = STDIN.noecho(&:gets)
+    keep_playing = true
+    player1name = gets.chomp
+    player2name = gets.chomp
+    game = RPS.new(player1name,player2name)
+
+    while (keep_playing)
+      puts "#{player1name}'s move now"
+      move1 = STDIN.noecho(&:gets)
+      puts "#{player2name}'s move now"
+      move2 = STDIN.noecho(&:gets)
+      keep_playing = game.play(move1,move2)
+    end
+
+
   end
 end
 
