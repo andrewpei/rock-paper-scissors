@@ -1,5 +1,6 @@
 # For each exercise try and guess the computational complexity
 require 'pry-debugger'
+require 'rubygems'
 
 module Exercises
   # Exercise 0
@@ -150,16 +151,14 @@ class RPS
 
     if @player1score == 2
       puts "#{@player1} wins the match! Better luck next time #{@player2}"
-      @player1score = 0
       return false
     elsif @player2score == 2
       puts "#{@player2} wins the match! Better luck next time #{@player1}"
-      @player2score = 0 
       return false
     end
 
     return true
-    
+
   end
 end
 
@@ -187,19 +186,32 @@ class RPSPlayer
     #          what the player is typing! :D
     # This is also why we needed to require 'io/console'
     # move = STDIN.noecho(&:gets)
-    keep_playing = true
+    keep_playing, invalid_input1, invalid_input2  = true
+    # options = ['rock', 'paper', 'scissors']
+
+    puts "Player 1 please enter your name"
     player1name = gets.chomp
+    puts "Player 2 please enter your name"
     player2name = gets.chomp
     game = RPS.new(player1name,player2name)
+    
 
     while (keep_playing)
       puts "#{player1name}'s move now"
-      move1 = STDIN.noecho(&:gets)
+      # while (invalid_input1)
+      move1 = STDIN.noecho(&:gets).chomp
+      #   if options.include?(move1.downcase)
+      #     invalid_input1 = false
+      #     next
+      #   end
+      #   puts "Sorry invalid input. Please enter rock, paper, or scissors."
+      # end
+
       puts "#{player2name}'s move now"
-      move2 = STDIN.noecho(&:gets)
+      move2 = STDIN.noecho(&:gets).chomp
+   
       keep_playing = game.play(move1,move2)
     end
-
 
   end
 end

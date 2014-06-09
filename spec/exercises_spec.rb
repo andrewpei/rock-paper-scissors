@@ -125,3 +125,7 @@ describe "Exercise 9" do
   end
 
 end
+
+describe "Rock Paper Scissors game" do
+  
+end
