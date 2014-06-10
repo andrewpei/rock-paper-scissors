@@ -121,16 +121,17 @@ class RPS
   # RPS through the terminal.
 
   attr_reader :player1, :player2
-  attr_reader :player1score, :player2score
+  attr_accessor  :player1score, :player2score
   
   def initialize(player1, player2)
     @player1 = player1
     @player2 = player2
     @player1score = 0
     @player2score = 0
+    @keep_playing = true
   end
 
-  def play(move1,move2)
+  def pick_winner(move1,move2)
     outcomes = {
       "rock"     => {"rock" => :draw, "paper" => @player2, "scissors" => @player1},
       "paper"    => {"rock"=> @player1, "paper"  => :draw, "scissors" => @player2},
@@ -138,28 +139,21 @@ class RPS
     }
 
     winner = outcomes[move1][move2]
+    winner == @player1 ? @player1score += 1 : @player2score += 2
 
-    if winner == @player1
-      @player1score += 1
-      puts "#{@player1} wins the round! The score is now #{@player1score} to #{@player2score}"
-    elsif winner == @player2
-      @player2score += 1
-      puts "#{@player2} wins the round! The score is now #{@player1score} to #{@player2score}"
-    else
-      puts "The round was a draw!"
-    end
-
-    if @player1score == 2
-      puts "#{@player1} wins the match! Better luck next time #{@player2}"
-      return false
-    elsif @player2score == 2
-      puts "#{@player2} wins the match! Better luck next time #{@player1}"
-      return false
-    end
-
-    return true
-
+    return winner
   end
+
+  def check_if_over
+    if @player1score == 2
+      return @player1
+    elsif @player2score == 2
+      return @player2
+    else
+      return false
+    end
+  end
+
 end
 
 
@@ -186,31 +180,34 @@ class RPSPlayer
     #          what the player is typing! :D
     # This is also why we needed to require 'io/console'
     # move = STDIN.noecho(&:gets)
-    keep_playing, invalid_input1, invalid_input2  = true
+
+    # invalid_input1, invalid_input2  = true
     # options = ['rock', 'paper', 'scissors']
+    keep_playing = true
 
     puts "Player 1 please enter your name"
     player1name = gets.chomp
     puts "Player 2 please enter your name"
     player2name = gets.chomp
+
     game = RPS.new(player1name,player2name)
-    
 
     while (keep_playing)
       puts "#{player1name}'s move now"
-      # while (invalid_input1)
       move1 = STDIN.noecho(&:gets).chomp
-      #   if options.include?(move1.downcase)
-      #     invalid_input1 = false
-      #     next
-      #   end
-      #   puts "Sorry invalid input. Please enter rock, paper, or scissors."
-      # end
 
       puts "#{player2name}'s move now"
       move2 = STDIN.noecho(&:gets).chomp
    
-      keep_playing = game.play(move1,move2)
+      winner = game.pick_winner(move1,move2)
+      (winner == :draw) ? (puts "The round was a draw") : (puts "#{winner} won this round!")
+      puts "The score is now #{game.player1}: #{game.player1score}, #{game.player2}: #{game.player2score}"
+
+      if game.check_if_over != false
+        puts "#{game.check_if_over} has won the match!"
+        keep_playing = false
+      end
+
     end
 
   end
