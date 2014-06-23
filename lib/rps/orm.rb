@@ -1,12 +1,12 @@
 require 'pg'
 require 'pry-byebug'
 
-module TM
+module RPS
   class ORM
     attr_reader :db_adapter
 
     def initialize
-      @db_adapter = PG.connect(host: 'localhost', dbname: 'tm-db')
+      @db_adapter = PG.connect(host: 'localhost', dbname: 'rps-db')
     end
 
     def add_project(proj_name)
@@ -182,9 +182,8 @@ module TM
 
     def delete_tables
       command = <<-SQL
-        DROP TABLE tasks;
-        DROP TABLE projects_users;
-        DROP TABLE projects;
+        DROP TABLE match_state;
+        DROP TABLE match_winners;
         DROP TABLE users;
       SQL
 
@@ -193,31 +192,27 @@ module TM
 
     def create_tables
       command = <<-SQL
-        CREATE TABLE projects(
-          project_id SERIAL PRIMARY KEY,
-          name text
-        );
-
         CREATE TABLE users(
-          user_id SERIAL PRIMARY KEY,
-          name text
+          id serial PRIMARY KEY,
+          user_name text,
+          password text,
+          games_won integer,
+          games_lost integer
         );
 
-        CREATE TABLE tasks(
-          task_id SERIAL PRIMARY KEY,
-          description text,
-          project_id INTEGER REFERENCES projects (project_id),
-          priority text,
-          user_assigned INTEGER REFERENCES users (user_id),
-          status_done boolean,
-          creation_date timestamptz,
-          completion_date timestamptz
+        CREATE TABLE match_winners(
+          id serial PRIMARY KEY,
+          winner integer REFERENCES users(id)
         );
 
-        CREATE TABLE projects_users(
-          id SERIAL PRIMARY KEY,
-          project_id integer REFERENCES projects(project_id),
-          user_id integer REFERENCES users(user_id)
+        CREATE TABLE match_state(
+          id serial PRIMARY KEY,
+          p1_move text,
+          p2_move text,
+          round_winner integer REFERENCES users (id),
+          p1_score integer,
+          p2_score integer,
+          game_id integer REFERENCES match_winners(id)
         );
       SQL
 

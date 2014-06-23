@@ -1,5 +1,5 @@
 require 'rubygems'
-require_relative '../rps.rb'
+require_relative '../lib/rps/game.rb'
 
 describe "Rock Paper Scissors game" do
 
