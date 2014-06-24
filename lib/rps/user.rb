@@ -1,7 +1,9 @@
+
 class RPS::User
+
   attr_reader :name, :user_id, :games_won, :games_lost
 
-  def initialize(uid, name, password)
+  def initialize(user_id, name, password)
     @user_id = uid
     @name = name
     @password = password
