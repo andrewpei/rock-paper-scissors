@@ -33,10 +33,11 @@ describe 'ORM' do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     match_id = RPS.orm.create_game(1,2)
+    # binding.pry
     expect(match_id).to eq(1)
   end
 
-  it "creates an empty new round" do
+  xit "creates an empty new round" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     user3 = RPS.orm.create_user("Gideon", "asdf1234")
@@ -45,8 +46,16 @@ describe 'ORM' do
     match_id2 = RPS.orm.create_game(3,4)
     new_round1 = RPS.orm.new_round(match_id1)
     new_round2 = RPS.orm.new_round(match_id2)
-    binding.pry
-    expect(new_round).to eq(match_id1)
+    expect(new_round1).to eq(1)
   end
 
+  it "sends a user's move to the db" do 
+    user1 = RPS.orm.create_user("Andrew", "asdf1234")
+    user2 = RPS.orm.create_user("Gabe", "asdf1234")
+    user3 = RPS.orm.create_user("Jon", "asdf1234")
+    match_id1 = RPS.orm.create_game(1,2)
+    match_id2 = RPS.orm.create_game(1,3)
+    match_id3 = RPS.orm.create_game(2,3)
+    # binding.pry
+  end 
 end

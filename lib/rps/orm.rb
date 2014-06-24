@@ -28,7 +28,7 @@ module RPS
       SQL
 
       result = @db_adapter.exec(command).first
-      # binding.pry
+      new_round(result['id'].to_i)
       return result['id'].to_i
     end
 
@@ -36,47 +36,91 @@ module RPS
       command = <<-SQL
         INSERT INTO round_moves(match_id)
         VALUES(#{match_id})
-        RETURNING *;
+        RETURNING id;
+      SQL
+
+      result = @db_adapter.exec(command).first
+      # binding.pry
+      command = <<-SQL
+        UPDATE match_history
+        SET current_round = #{result['id'].to_i}
+        WHERE match_history.id = #{match_id};
       SQL
 
       @db_adapter.exec(command)
-      return 
+      return result['id'].to_i
     end
 
-    def send_move(player_id, match_id, round_id, move) #round_moves table
-      # command = <<-SQL
-      #   UPDATE round_moves
-      #   SET 
-      #   WHERE 
-      #   RETURNING *;
-      # SQL
+    def send_move(p1_move, p2_move, match_id) #round_moves table NOT WORKING YET
+      command = <<-SQL 
+        UPDATE round_moves
+        SET  p1_move = #{p1_move}, p2_move = #{p2_move}
+        FROM match_history m
+        WHERE m.current_round = round_moves.id AND round_moves.match_id = #{match_id}
+        RETURNING *;
+      SQL
 
-      # result = @db_adapter.exec(command).first
+      result = @db_adapter.exec(command).first
     end
 
-    def lookup_player(user_name)
+    def set_round_outcome(match_id, winner_id, p1_score, p2_score) #NOT WORKING YET round_moves table
+      command = <<-SQL
+        UPDATE round_moves
+        SET  round_winner = #{winner_id}, p1_score = #{p1_score}, p2_score = #{p2_score}
+        FROM match_history m
+        WHERE m.current_round = round_moves.id AND round_moves.match_id = #{match_id}
+        RETURNING *;
+      SQL
+
+      result = @db_adapter.exec(command).first
     end
 
-    def set_round_outcome(winner_id, p1_score, p2_score) #round_moves table
+    def retrieve_current_round(match_id) #round_moves table
+      command = <<-SQL
+        SELECT round_moves.id, p1, p1_move, p2, p2_move, round_winner, p1_score, p2_score, round_moves.match_id
+        FROM round_moves, match_history
+        WHERE match_history.current_round = round_moves.id AND round_moves.match_id = #{match_id};
+      SQL
+
+      return @db_adapter.exec(command).first
     end
 
-    def retrieve_round_moves(game_id) #round_moves table
+    def retrieve_all_rounds(match_id) #round_moves table
+      command = <<-SQL
+        SELECT round_moves.id, p1, p1_move, p2, p2_move, round_winner, p1_score, p2_score, round_moves.match_id
+        FROM round_moves, match_history
+        WHERE match_id = #{match_id};
+      SQL
+
+      return @db_adapter.exec(command).first
     end
 
     def retrieve_user_info(user_id) #users table
-    end
+      command = <<-SQL
+        SELECT *
+        FROM users
+        WHERE id = #{user_id};
+      SQL
 
-    def retrieve_winners_match(user_id) #match_history table
+      return @db_adapter.exec(command).first
     end
 
     def set_match_winner(match_id, user_id) #match_history table
+      command = <<-SQL
+        UPDATE match_history
+        SET  winner = user_id
+        WHERE id = #{match_id}
+        RETURNING *;
+      SQL
+
+      return @db_adapter.exec(command).first
     end
 
     def delete_tables
       command = <<-SQL
-        DROP TABLE round_moves;
-        DROP TABLE match_history;
-        DROP TABLE users;
+        DROP TABLE round_moves CASCADE;
+        DROP TABLE match_history CASCADE;
+        DROP TABLE users CASCADE;
       SQL
 
       @db_adapter.exec(command)
@@ -109,9 +153,8 @@ module RPS
           match_id integer REFERENCES match_history(id)
         );
 
-        ALTER TABLE match_history(
-          ADD current_round integer REFERENCES round_moves(id)
-        );
+        ALTER TABLE match_history
+          ADD current_round integer REFERENCES round_moves(id);
       SQL
 
       @db_adapter.exec(command)
