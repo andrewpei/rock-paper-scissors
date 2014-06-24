@@ -108,6 +108,10 @@ module RPS
           p2_score integer,
           match_id integer REFERENCES match_history(id)
         );
+
+        ALTER TABLE match_history(
+          ADD current_round integer REFERENCES round_moves(id)
+        );
       SQL
 
       @db_adapter.exec(command)
