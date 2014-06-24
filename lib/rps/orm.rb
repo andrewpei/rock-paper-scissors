@@ -9,181 +9,73 @@ module RPS
       @db_adapter = PG.connect(host: 'localhost', dbname: 'rps-db')
     end
 
-    def add_project(proj_name)
+    def create_user(user_name, password)
       command = <<-SQL
-        INSERT INTO projects(name)
-        VALUES('#{proj_name}')
+        INSERT INTO users(user_name, password, matches_won, matches_lost)
+        VALUES('#{user_name}', '#{password}', 0, 0)
         RETURNING *;
       SQL
 
-      result = @db_adapter.exec(command).values
-      project = TM::Project.new(result[0][0].to_i, result[0][1])
+      result = @db_adapter.exec(command).first
+      return RPS::User.new(result['id'], result['user_name'], result['password'])
+    end
+
+    def create_game(p1, p2) #round_moves table and match_history table
+      command = <<-SQL
+        INSERT INTO match_history(p1, p2)
+        VALUES(#{p1}, #{p2})
+        RETURNING *;
+      SQL
+
+      result = @db_adapter.exec(command).first
       # binding.pry
-      return project
+      return result['id'].to_i
     end
 
-    def list_projects
+    def new_round(match_id) #round_moves table
       command = <<-SQL
-        SElECT * FROM projects
-      SQL
-
-      result = @db_adapter.exec(command).values
-      projects = []
-      result.each { |proj|
-        projects << TM::Project.new(proj[0],proj[1])
-      }
-      return projects
-    end
-
-    def create_task(desc, proj_id, priority)
-      creation_date = Time.now
-      command = <<-SQL
-        INSERT INTO tasks(description, project_id, priority, status_done, creation_date)
-        VALUES('#{desc}', #{proj_id}, '#{priority}' , false, '#{creation_date}')
+        INSERT INTO round_moves(match_id)
+        VALUES(#{match_id})
         RETURNING *;
-      SQL
-      # binding.pry
-      result = @db_adapter.exec(command).values
-      # binding.pry
-      task = TM::Task.new(result[0][0].to_i, result[0][1], result[0][2].to_i, result[0][3], result[0][4], 'f', creation_date, nil)
-      return task
-    end
-
-    def complete_task(tid)
-      completion_date = Time.now
-      command = <<-SQL
-        UPDATE tasks
-        SET status_done = true, completion_date = '#{completion_date}'
-        WHERE tasks.task_id = #{tid}
-        RETURNING *;
-      SQL
-
-      result = @db_adapter.exec(command).values
-      task = TM::Task.new(result[0][0].to_i, result[0][1], result[0][2].to_i, result[0][3], result[0][4].to_i, result[0][5], Time.parse(result[0][6]), Time.parse(result[0][7]))
-      # binding.pry
-      return task
-    end
-
-    def remaining_tasks(pid)
-      command = <<-SQL
-        SElECT * FROM tasks
-        where project_id = #{pid} AND status_done = 'f';
-      SQL
-
-      result = @db_adapter.exec(command).values
-      tasks_left = []
-      result.each { |task_data|
-        task = TM::Task.new(task_data[0].to_i, task_data[1], pid, task_data[3], task_data[4].to_i, task_data[5], Time.parse(task_data[6]), task_data[7])
-        tasks_left << task
-      }
-      return tasks_left
-    end
-
-    def finished_tasks(pid)
-      command = <<-SQL
-        SElECT * FROM tasks
-        where project_id = #{pid} AND status_done = 't';
-      SQL
-
-      result = @db_adapter.exec(command)
-      finished_tasks = []
-      result.values.each { |task_data|
-        task = TM::Task.new(task_data[0].to_i, task_data[1], pid, task_data[3], task_data[4].to_i, task_data[5], Time.parse(task_data[6]), Time.parse(task_data[7]))
-        finished_tasks << task
-      }
-      return finished_tasks
-
-    end
-
-    def create_user(name)
-      command = <<-SQL
-        INSERT INTO users(name)
-        VALUES('#{name}')
-        RETURNING *;
-      SQL
-
-      result = @db_adapter.exec(command).values
-      id = result[0][0].to_i
-      name = result[0][1]
-      user = TM::User.new(id, name)
-      return user
-    end
-
-    def assign_to_proj(uid, pid)
-      command = <<-SQL
-        INSERT INTO projects_users(user_id, project_id)
-        VALUES(#{uid}, #{pid})
-        RETURNING *;
-      SQL
-
-      result = @db_adapter.exec(command).values
-      return result[0]
-    end
-
-    def remove_user_from_proj(uid, pid) #need to also unassign all tasks this user had
-      command = <<-SQL
-        DELETE FROM projects_users
-        WHERE project_id = #{pid} AND user_id = #{uid};
-        UPDATE tasks
-        SET user_assigned = NULL
-        WHERE tasks.user_assigned = #{uid} AND tasks.project_id = #{pid};
       SQL
 
       @db_adapter.exec(command)
+      return 
     end
 
-    def assign_task(uid, tid)
-      task = task_lookup(tid)
-      command = <<-SQL
-        SELECT *
-        FROM projects p
-        JOIN projects_users pu
-        ON p.project_id = pu.project_id
-        JOIN users u
-        ON u.user_id = pu.user_id
-        WHERE u.user_id = #{uid} AND p.project_id = #{task.proj_id};
-      SQL
+    def send_move(player_id, match_id, round_id, move) #round_moves table
+      # command = <<-SQL
+      #   UPDATE round_moves
+      #   SET 
+      #   WHERE 
+      #   RETURNING *;
+      # SQL
 
-      result = @db_adapter.exec(command).values
-
-      if result.length == 1 && task.done == 'f'
-        command = <<-SQL
-          UPDATE tasks
-          SET user_assigned = #{uid}
-          WHERE tasks.task_id = #{tid};
-        SQL
-
-        @db_adapter.exec(command)
-        # binding.pry
-        return task_lookup(tid)
-      else 
-        return "Sorry, not a valid task assignment"
-      end
+      # result = @db_adapter.exec(command).first
     end
 
-    def task_lookup(tid)
-      command = <<-SQL
-        SElECT * FROM tasks
-        where task_id = #{tid}
-      SQL
-
-      result = @db_adapter.exec(command).values
-      result[0][7].nil? ? completion_date = nil : completion_date = Time.parse(result[0][7])
-      task = TM::Task.new(result[0][0].to_i, result[0][1], result[0][2].to_i, result[0][3], result[0][4].to_i, result[0][5], Time.parse(result[0][6]), completion_date)
-      # binding.pry
-      return task
+    def lookup_player(user_name)
     end
 
-    def delete_proj(pid) #Extra credit
+    def set_round_outcome(winner_id, p1_score, p2_score) #round_moves table
     end
 
-    def delete_user(uid) #Extra credit
+    def retrieve_round_moves(game_id) #round_moves table
+    end
+
+    def retrieve_user_info(user_id) #users table
+    end
+
+    def retrieve_winners_match(user_id) #match_history table
+    end
+
+    def set_match_winner(match_id, user_id) #match_history table
     end
 
     def delete_tables
       command = <<-SQL
-        DROP TABLE match_state;
-        DROP TABLE match_winners;
+        DROP TABLE round_moves;
+        DROP TABLE match_history;
         DROP TABLE users;
       SQL
 
@@ -196,23 +88,25 @@ module RPS
           id serial PRIMARY KEY,
           user_name text,
           password text,
-          games_won integer,
-          games_lost integer
+          matches_won integer,
+          matches_lost integer
         );
 
-        CREATE TABLE match_winners(
+        CREATE TABLE match_history(
           id serial PRIMARY KEY,
-          winner integer REFERENCES users(id)
+          winner integer REFERENCES users(id),
+          p1 integer REFERENCES users(id),
+          p2 integer REFERENCES users(id)
         );
 
-        CREATE TABLE match_state(
+        CREATE TABLE round_moves(
           id serial PRIMARY KEY,
           p1_move text,
           p2_move text,
-          round_winner integer REFERENCES users (id),
+          round_winner integer REFERENCES users(id),
           p1_score integer,
           p2_score integer,
-          game_id integer REFERENCES match_winners(id)
+          match_id integer REFERENCES match_history(id)
         );
       SQL
 
