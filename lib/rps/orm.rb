@@ -40,7 +40,6 @@ module RPS
       SQL
 
       result = @db_adapter.exec(command).first
-      # binding.pry
       command = <<-SQL
         UPDATE match_history
         SET current_round = #{result['id'].to_i}
@@ -54,16 +53,17 @@ module RPS
     def send_move(p1_move, p2_move, match_id) #round_moves table NOT WORKING YET
       command = <<-SQL 
         UPDATE round_moves
-        SET  p1_move = #{p1_move}, p2_move = #{p2_move}
+        SET  p1_move = '#{p1_move}', p2_move = '#{p2_move}'
         FROM match_history m
         WHERE m.current_round = round_moves.id AND round_moves.match_id = #{match_id}
         RETURNING *;
       SQL
 
       result = @db_adapter.exec(command).first
+      return result
     end
 
-    def set_round_outcome(match_id, winner_id, p1_score, p2_score) #NOT WORKING YET round_moves table
+    def set_round_outcome(match_id, winner_id, p1_score, p2_score)
       command = <<-SQL
         UPDATE round_moves
         SET  round_winner = #{winner_id}, p1_score = #{p1_score}, p2_score = #{p2_score}
@@ -105,6 +105,31 @@ module RPS
       return @db_adapter.exec(command).first
     end
 
+    def update_user_info(user_id, user_name, password)
+      command = <<-SQL
+        UPDATE users
+        SET  user_name = '#{user_name}', password = '#{password}'
+        WHERE id = #{user_id}
+        RETURNING *;
+      SQL
+
+      return @db_adapter.exec(command).first
+    end
+
+    def update_user_wl(user_id, winner_id)
+
+    end
+
+    def retrieve_user_match_history(user_id)
+      command = <<-SQL
+        SELECT id, winner, p1, p2
+        FROM match_history
+        WHERE p1 = #{user_id} OR p2 = #{user_id};
+      SQL
+
+      return @db_adapter.exec(command).first
+    end
+
     def set_match_winner(match_id, user_id) #match_history table
       command = <<-SQL
         UPDATE match_history
@@ -113,7 +138,11 @@ module RPS
         RETURNING *;
       SQL
 
-      return @db_adapter.exec(command).first
+      result = @db_adapter.exec(command).first
+      update_user_wl(result['p1'].to_i, result['winner'].to_i)
+      update_user_wl(result['p2'].to_i, result['winner'].to_i)
+
+      return result
     end
 
     def delete_tables
