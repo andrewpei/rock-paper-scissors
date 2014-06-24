@@ -59,7 +59,7 @@ describe 'ORM' do
     expect(result['p1_move']).to eq('rock')
   end
 
-  xit "sets the round outcome correctly" do
+  it "sets the round outcome correctly" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
@@ -67,33 +67,32 @@ describe 'ORM' do
     expect(outcome['round_winner']).to eq(user1.user_id)
   end
 
-  xit "retrieves the current round's info" do
+  it "retrieves the current round's info" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
-    RPS.new_round(match_id1)
+    RPS.orm.new_round(match_id1)
 
     outcome = RPS.orm.retrieve_current_round(match_id1)
-    binding.pry
-    expect(outcome['id']).to eq(2)
+    # binding.pry
+    expect(outcome['id'].to_i).to eq(2)
   end
 
   xit "retrieve's all rounds for a match" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
+    user3 = RPS.orm.create_user("Jon", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
-    RPS.new_round(match_id1)
-    RPS.new_round(match_id1)
-    RPS.new_round(match_id1)
-    RPS.new_round(match_id1)
-    RPS.new_round(match_id1)
+    match_id3 = RPS.orm.create_game(2,3)
+    RPS.orm.new_round(match_id1)
+    RPS.orm.new_round(match_id1)
 
     outcome = RPS.orm.retrieve_all_rounds(match_id1)
-    binding.pry
-    expect(outcome['id']).to eq(2)
+    # binding.pry
+    expect(outcome['id'].to_i).to eq(3)
   end
 
-  xit "sets the winner of the match" do
+  it "sets the winner of the match" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
@@ -101,13 +100,13 @@ describe 'ORM' do
     expect(result['winner']).to eq(user1.user_id)
   end
 
-  xit "retrieve's a user's info" do
+  it "retrieve's a user's info" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     result = RPS.orm.retrieve_user_info(user1.user_id)
     expect(result['user_name']).to eq("Andrew")
   end
 
-  xit "updates a user's user_name and password" do
+  it "updates a user's user_name and password" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     expect(user1.name).to eq('Andrew')
     result = RPS.orm.update_user_info(user1.user_id, "Gabe", "blag1234")
@@ -120,7 +119,8 @@ describe 'ORM' do
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
     RPS.orm.set_match_winner(match_id1, user1.user_id)
-    result = retrieve_user_info(user1.user_id)
-    expect(result['matches_won']).to eq(1)
+
+    result = RPS.orm.retrieve_user_info(user1.user_id)
+    expect(result['matches_won'].to_i).to eq(1)
   end
 end

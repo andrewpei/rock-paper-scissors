@@ -92,7 +92,9 @@ module RPS
         WHERE match_id = #{match_id};
       SQL
 
-      return @db_adapter.exec(command).first
+      result = @db_adapter.exec(command).first
+      binding.pry
+      return result
     end
 
     def retrieve_user_info(user_id) #users table
@@ -117,7 +119,7 @@ module RPS
     end
 
     def update_user_wl(user_id, winner_id)
-
+      
     end
 
     def retrieve_user_match_history(user_id)
@@ -133,7 +135,7 @@ module RPS
     def set_match_winner(match_id, user_id) #match_history table
       command = <<-SQL
         UPDATE match_history
-        SET  winner = user_id
+        SET  winner = #{user_id}
         WHERE id = #{match_id}
         RETURNING *;
       SQL
