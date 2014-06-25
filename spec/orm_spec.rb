@@ -78,7 +78,7 @@ describe 'ORM' do
     expect(outcome['id'].to_i).to eq(2)
   end
 
-  xit "retrieve's all rounds for a match" do
+  it "retrieve's all rounds for a match" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     user3 = RPS.orm.create_user("Jon", "asdf1234")

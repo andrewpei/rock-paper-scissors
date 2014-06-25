@@ -89,12 +89,15 @@ module RPS
       command = <<-SQL
         SELECT round_moves.id, p1, p1_move, p2, p2_move, round_winner, p1_score, p2_score, round_moves.match_id
         FROM round_moves, match_history
-        WHERE match_id = #{match_id};
+        WHERE match_history.id = #{match_id} AND round_moves.match_id = #{match_id};
       SQL
 
-      result = @db_adapter.exec(command).first
-      binding.pry
-      return result
+      result = @db_adapter.exec(command)
+      output = []
+      result.each { |row|
+        output << row
+      }
+      return output
     end
 
     def retrieve_user_info(user_id) #users table
@@ -129,7 +132,8 @@ module RPS
         WHERE p1 = #{user_id} OR p2 = #{user_id};
       SQL
 
-      return @db_adapter.exec(command).first
+      # can't use the first method here
+      return @db_adapter.exec(command)
     end
 
     def set_match_winner(match_id, user_id) #match_history table
