@@ -1,9 +1,23 @@
-<form method="post" action="/translate">
-    <div>
-      <input type="text" id="text" name="text" />
+<body>
+
+  <div class="small-3 small-centered columns">
+    <div class="row">
+      <h3>Start playing!</h3>
     </div>
-  
-    <div>
-      <input type="submit" value="Pigify">
-    </div>
-</form>
+    <form method="post" action="/">
+      <div class="row">
+        <input type="text" placeholder="Username" id="username" name="english" />
+      </div>
+      <div class="row">
+        <input type="text" placeholder="Password" id="password" name="english" />
+      </div>
+      <div class="row">
+        <input class="button" type="submit" value="Login">
+      </div>
+      <div class="row">
+        Not registered? <a href="/register">Sign up.</a>
+      </div>
+    </form>
+  </div>
+
+</body>

@@ -156,7 +156,7 @@ module RPS
         @db_adapter.exec(command)
         # binding.pry
         return task_lookup(tid)
-      else 
+      else
         return "Sorry, not a valid task assignment"
       end
     end
