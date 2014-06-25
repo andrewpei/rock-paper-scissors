@@ -97,9 +97,6 @@ module RPS
       return result
     end
 
-    # Must create a user instance
-    # Must retrieve_user_info by username
-
     def retrieve_user_info(user_name) #users table
       command = <<-SQL
         SELECT *
@@ -107,8 +104,8 @@ module RPS
         WHERE user_name = '#{user_name}';
       SQL
 
-      return @db_adapter.exec(command).first
-      # return RPS::User.new(result['id'], result['user_name'], result['password'])
+      result = @db_adapter.exec(command).first
+      return RPS::User.new(result['id'], result['user_name'], result['password'])
     end
 
     def update_user_info(user_id, user_name, password)

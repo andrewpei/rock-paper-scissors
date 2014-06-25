@@ -101,10 +101,11 @@ describe 'ORM' do
   end
 
   it "retrieve's a user's info" do
-    # binding.pry
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     result = RPS.orm.retrieve_user_info("Andrew")
-    expect(result['user_name']).to eq("Andrew")
+    expect(result).to be_a(RPS::User)
+    expect(result.user_name).to eq("Andrew")
+    expect(result.password).to eq("asdf1234")
   end
 
   it "updates a user's user_name and password" do
