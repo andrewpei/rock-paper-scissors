@@ -1,3 +1,4 @@
+
 class RPS::User
   attr_reader :name, :user_id, :matches_won, :matches_lost
 
