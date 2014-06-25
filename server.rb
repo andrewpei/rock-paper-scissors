@@ -22,12 +22,22 @@ post '/register' do
   erb :register
 end
 
-get '/play' do
+get '/dashboard' do
+  puts params
+  erb :dashboard
+end
+
+post '/dashboard' do
+  puts params
+  erb :dashboard
+end
+
+get '/game' do
   puts params
   erb :game
 end
 
-post '/play' do
+post '/game' do
   puts params
   erb :game
 end
