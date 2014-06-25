@@ -123,25 +123,27 @@ module RPS
     end
 
     def update_user_wl(user_id, winner_id)
-      win_loss = retrieve_user_info(user_id)
-
+      player = retrieve_user_info(user_id)
+      # binding.pry
       if user_id == winner_id
-        command = <<-SQL
-          UPDATE user
-          SET  matches_won = 
-          WHERE id = #{match_id}
-          RETURNING *;
-        SQL
-      else 
+        player['matches_won'] = player['matches_won'].to_i + 1
         command = <<-SQL
           UPDATE users
-          SET  winner = #{user_id}
-          WHERE id = #{match_id}
+          SET  matches_won = #{player['matches_won']}
+          RETURNING *;
+        SQL
+      else
+        player['matches_lost'] = player['matches_lost'].to_i + 1
+        command = <<-SQL
+          UPDATE users
+          SET matches_lost = #{player['matches_lost']}
           RETURNING *;
         SQL
       end
 
       result = @db_adapter.exec(command).first
+      # binding.pry
+      return result
     end
 
     def retrieve_user_match_history(user_id)
@@ -164,9 +166,11 @@ module RPS
       SQL
 
       result = @db_adapter.exec(command).first
-      # update_user_wl(result['p1'].to_i, result['winner'].to_i, result['matches_won'], result['matches_lost'])
-      # update_user_wl(result['p2'].to_i, result['winner'].to_i, result['matches_won'], result['matches_lost'])
-
+      # binding.prys
+  
+      update_user_wl(result['p1'].to_i, result['winner'].to_i)
+      update_user_wl(result['p2'].to_i, result['winner'].to_i)
+      
       return result
     end
 

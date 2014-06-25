@@ -91,7 +91,7 @@ describe 'ORM' do
     expect(outcome.size).to eq(3)
   end
 
-  xit "sets the winner of the match" do
+  it "sets the winner of the match" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
@@ -112,7 +112,7 @@ describe 'ORM' do
     expect(result['user_name']).to eq('Gabe')
   end
 
-  xit "updates the user win loss record when a game is over" do
+  it "updates the user win loss record when a game is over" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     expect(user1.matches_won).to eq(0)
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
