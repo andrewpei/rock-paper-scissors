@@ -88,11 +88,10 @@ describe 'ORM' do
     RPS.orm.new_round(match_id1)
 
     outcome = RPS.orm.retrieve_all_rounds(match_id1)
-    # binding.pry
-    expect(outcome['id'].to_i).to eq(3)
+    expect(outcome.size).to eq(3)
   end
 
-  it "sets the winner of the match" do
+  xit "sets the winner of the match" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)

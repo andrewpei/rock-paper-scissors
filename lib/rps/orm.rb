@@ -97,6 +97,7 @@ module RPS
       result.each { |row|
         output << row
       }
+      # binding.pry
       return output
     end
 
@@ -122,7 +123,25 @@ module RPS
     end
 
     def update_user_wl(user_id, winner_id)
-      
+      win_loss = retrieve_user_info(user_id)
+
+      if user_id == winner_id
+        command = <<-SQL
+          UPDATE user
+          SET  matches_won = 
+          WHERE id = #{match_id}
+          RETURNING *;
+        SQL
+      else 
+        command = <<-SQL
+          UPDATE users
+          SET  winner = #{user_id}
+          WHERE id = #{match_id}
+          RETURNING *;
+        SQL
+      end
+
+      result = @db_adapter.exec(command).first
     end
 
     def retrieve_user_match_history(user_id)
@@ -145,8 +164,8 @@ module RPS
       SQL
 
       result = @db_adapter.exec(command).first
-      update_user_wl(result['p1'].to_i, result['winner'].to_i)
-      update_user_wl(result['p2'].to_i, result['winner'].to_i)
+      # update_user_wl(result['p1'].to_i, result['winner'].to_i, result['matches_won'], result['matches_lost'])
+      # update_user_wl(result['p2'].to_i, result['winner'].to_i, result['matches_won'], result['matches_lost'])
 
       return result
     end
