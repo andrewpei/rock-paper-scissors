@@ -51,7 +51,7 @@ module RPS
     end
 
     def send_move(p1_move, p2_move, match_id) #round_moves table NOT WORKING YET
-      command = <<-SQL 
+      command = <<-SQL
         UPDATE round_moves
         SET  p1_move = '#{p1_move}', p2_move = '#{p2_move}'
         FROM match_history m
@@ -101,14 +101,16 @@ module RPS
       return output
     end
 
-    def retrieve_user_info(user_id) #users table
+    def retrieve_user_info(user_name) #users table
       command = <<-SQL
         SELECT *
         FROM users
-        WHERE id = #{user_id};
+        WHERE user_name = '#{user_name}';
       SQL
-
-      return @db_adapter.exec(command).first
+      result = @db_adapter.exec(command).first
+      if result != nil
+        return RPS::User.new(result['id'], result['user_name'], result['password'])
+      end
     end
 
     def update_user_info(user_id, user_name, password)
@@ -167,10 +169,10 @@ module RPS
 
       result = @db_adapter.exec(command).first
       # binding.prys
-  
+
       update_user_wl(result['p1'].to_i, result['winner'].to_i)
       update_user_wl(result['p2'].to_i, result['winner'].to_i)
-      
+
       return result
     end
 
