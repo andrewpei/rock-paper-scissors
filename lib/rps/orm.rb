@@ -103,9 +103,10 @@ module RPS
         FROM users
         WHERE user_name = '#{user_name}';
       SQL
-
       result = @db_adapter.exec(command).first
-      return RPS::User.new(result['id'], result['user_name'], result['password'])
+      if result != nil
+        return RPS::User.new(result['id'], result['user_name'], result['password'])
+      end
     end
 
     def update_user_info(user_id, user_name, password)

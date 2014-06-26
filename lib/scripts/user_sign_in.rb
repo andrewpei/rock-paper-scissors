@@ -1,17 +1,20 @@
-# Find the user in the database by username
-# If the user exists in the database, compare the password that was passed in to the user's password on the entity
-# If the passwords match, return the correct User object, otherwise return an error
-
-# result = RPS.orm.retrieve_user_info(user_id)
-
-# def authenticate(password)
-#   if result.password == password
-#     return true
-#   else
-#     return false
-#   end
-# end
 
 class RPS::UserSignIn
+
+  def self.run(input)
+    user = RPS.orm.retrieve_user_info(input[:user_name])
+    # binding.pry
+    if user.nil?
+      return { :success? => false, :error => "User doesn't exist by that username" }
+    end
+
+    check_password = user.authenticate(input[:password])
+    if !check_password
+      return { :success? => false, :error => "User's password doesn't match the password in the database" }
+    end
+
+    { :success? => true, :user => user }
+  end
+
 end
 

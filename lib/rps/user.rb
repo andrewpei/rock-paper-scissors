@@ -10,4 +10,8 @@ class RPS::User
     @matches_lost = matches_lost
   end
 
+  def authenticate(input_password)
+    return true if input_password == @password
+  end
+
 end
