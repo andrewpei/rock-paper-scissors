@@ -88,6 +88,8 @@ describe 'ORM' do
     user3 = RPS.orm.create_user("Jon", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
     match_id3 = RPS.orm.create_game(2,3)
+    match_id3 = RPS.orm.create_game(2,3)
+
     RPS.orm.new_round(match_id1)
     RPS.orm.new_round(match_id1)
 
@@ -127,6 +129,24 @@ describe 'ORM' do
     result = RPS.orm.retrieve_user_info(user1.user_id)
     expect(result['matches_won'].to_i).to eq(1)
   end
+
+  it "returns all matches sorted with in progress ones first" do
+    user1 = RPS.orm.create_user("Andrew", "asdf1234")
+    user2 = RPS.orm.create_user("Gabe", "asdf1234")
+    user3 = RPS.orm.create_user("Jon", "asdf1234")
+    user4 = RPS.orm.create_user("Bob", "asdf1234")
+    user5 = RPS.orm.create_user("Karen", "asdf1234")
+    match_id1 = RPS.orm.create_game(1,2)
+    match_id2 = RPS.orm.create_game(1,3)
+    match_id3 = RPS.orm.create_game(2,3)
+    match_id4 = RPS.orm.create_game(1,4)
+    match_id5 = RPS.orm.create_game(5,1)
+    RPS.orm.set_match_winner(match_id1.match_id, user1.user_id)
+    RPS.orm.set_match_winner(match_id5.match_id, user5.user_id)
+    binding.pry
+
+  end
+
 end
 
 

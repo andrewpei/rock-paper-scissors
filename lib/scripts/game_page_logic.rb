@@ -9,24 +9,30 @@ end
 class RPS::SendMove
   def self.run(input)
     #this method should be limited by if it is the user's turn, if not they shouldn't be able to get here
+    move = input[:move]
+    match_id = input[:match_id]
+    player_id = session[:user_id]
+
+    #Need to gather match_id, move being made, player ID 
+
   end
+
 end
 
-
-# def player_move(player_id, move)
-#   player_id == @player1_id ? current_player = 'p1_move' : current_player = 'p2_move'
-#   current_round = RPS.orm.send_move(current_player, move, @match_id)
-#   if !current_round["p1_move"].nil? && !current_round["p2_move"].nil?
-#     # binding.pry
-#     return play_round(current_round["p1_move"], current_round["p2_move"], @p1_score, @p2_score)
-#   else
-#     current_round = RPS.orm.retrieve_current_round(@match_id)
-#     @p1_score = current_round['p1_score'].to_i
-#     @p2_score = current_round['p2_score'].to_i
-#     # binding.pry
-#     return "Next player turn" #need to figure out what to return to site
-#   end
-# end
+def player_move(player_id, move)
+  player_id == @player1_id ? current_player = 'p1_move' : current_player = 'p2_move'
+  current_round = RPS.orm.send_move(current_player, move, @match_id)
+  if !current_round["p1_move"].nil? && !current_round["p2_move"].nil?
+    # binding.pry
+    return play_round(current_round["p1_move"], current_round["p2_move"], @p1_score, @p2_score)
+  else
+    current_round = RPS.orm.retrieve_current_round(@match_id)
+    @p1_score = current_round['p1_score'].to_i
+    @p2_score = current_round['p2_score'].to_i
+    # binding.pry
+    return "Next player turn" #need to figure out what to return to site
+  end
+end
 
 # def play_round(player1_move, player2_move, player1_score, player2_score)
 #   @rules = {

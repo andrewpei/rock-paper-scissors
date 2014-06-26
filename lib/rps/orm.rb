@@ -168,11 +168,11 @@ module RPS
     #   return @db_adapter.exec(command)
     # end
 
-    def retrieve_other_users(user_id)
+    def retrieve_eligible_opponents(user_id)
       command = <<-SQL
         SELECT *
         FROM users, match_history
-        WHERE users.id NOT IN (user_id, );
+        WHERE users.id NOT IN (user_id);
       SQL
       users = []
       @db_adapter.exec(command).each { |row|
@@ -183,13 +183,19 @@ module RPS
 
     def retrieve_user_match_history(user_id)
       command = <<-SQL
-        SELECT id, winner, p1, p2
-        FROM match_history
-        WHERE p1 = #{user_id} OR p2 = #{user_id};
+        select * 
+        From match_history
+        inner join round_moves
+        on match_history.id = round_moves.match_id
+        where p1 = #{user_id} OR p2 = #{user_id}
+        ORDER BY winner ASC;
       SQL
 
-      # can't use the first method here
-      return @db_adapter.exec(command)
+      users_matches = []
+      @db_adapter.exec(command).each { |match|
+        users_matches << Game.new(match['id'], match['p1'], match['p2'], match['p1_score'], match['p2_score'])
+      }
+      return users_matches
     end
 
     def set_match_winner(match_id, user_id) #match_history table
@@ -202,8 +208,8 @@ module RPS
 
       result = @db_adapter.exec(command).first
 
-      update_user_wl(result['p1'].to_i, result['winner'].to_i)
-      update_user_wl(result['p2'].to_i, result['winner'].to_i)
+      # update_user_wl(result['p1'].to_i, result['winner'].to_i)
+      # update_user_wl(result['p2'].to_i, result['winner'].to_i)
 
       return result
     end

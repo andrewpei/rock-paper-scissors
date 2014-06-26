@@ -21,7 +21,7 @@ post '/' do
     redirect back
   else
     @error = result[:error]
-    erb :login_error
+    erb :login #stay on page append error in red 
   end
   puts params
   erb :login
@@ -53,6 +53,12 @@ end
 
 get '/dashboard' do
   puts params
+  dashboard_data = RPS::RetrieveDashboardData.run
+  eligible_opponents = dashboard_data[0]
+  user_info = dashboard_data[1]
+  all_matches = dashboard_data[2]
+
+
   erb :dashboard
 end
 
