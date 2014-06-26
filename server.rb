@@ -16,7 +16,8 @@ post '/' do
   })
 
   if result.success?
-    session[:user_id] = result.user.id
+    session[:user_id] = result.user_id
+    session[:user_name] = result.user_name
     redirect back
   else
     @error = result[:error]

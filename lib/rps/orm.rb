@@ -37,7 +37,7 @@ module RPS
       SQL
       @db_adapter.exec(command)
 
-      return 
+      return RPS::Game.new
     end
 
     def new_round(match_id) #round_moves table
@@ -256,5 +256,4 @@ module RPS
   def self.orm
     @__db_adapter_instance ||= ORM.new
   end
-
 end

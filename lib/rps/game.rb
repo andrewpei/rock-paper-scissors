@@ -1,7 +1,7 @@
 require 'pry-byebug'
 module RPS
   class Game
-    attr_reader :player1_id, :player2_id, :match_id, :current_player_turn
+    attr_reader :player1_id, :player2_id, :match_id
 
     @@draw = 0
 
