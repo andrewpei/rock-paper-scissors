@@ -27,17 +27,17 @@ module RPS
         RETURNING *;
       SQL
 
-      result = @db_adapter.exec(command).first
+      new_match = @db_adapter.exec(command).first
 
-      new_round(result['id'].to_i)
+      new_round(new_match['id'].to_i)
       command = <<-SQL
         UPDATE round_moves
         SET p1_score = 0, p2_score = 0
-        WHERE round_moves.match_id = #{result['id'].to_i};
+        WHERE round_moves.match_id = #{new_match['id'].to_i};
       SQL
       @db_adapter.exec(command)
 
-      return result['id'].to_i
+      return 
     end
 
     def new_round(match_id) #round_moves table

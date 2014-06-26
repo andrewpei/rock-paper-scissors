@@ -5,13 +5,13 @@ module RPS
 
     @@draw = 0
 
-    def initialize(player1_id, player2_id, p1_score, p2_score, game_over)
+    def initialize(match_id, player1_id, player2_id, p1_score, p2_score, game_over)
       @player1_id = player1_id
       @player2_id = player2_id
-      @match_id = RPS.orm.create_game(player1_id, player2_id)
-      @game_over = false
-      @p1_score = 0
-      @p2_score = 0
+      @match_id = match_id
+      @game_over = game_over
+      @p1_score = p1_score
+      @p2_score = p2_score
     end
 
     def player_move(player_id, move)
