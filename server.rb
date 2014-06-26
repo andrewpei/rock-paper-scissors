@@ -33,6 +33,20 @@ get '/register' do
 end
 
 post '/register' do
+  result = RPS::RegisterUser.run({
+    user_name: params[:user_name],
+    password: params[:password]
+  })
+
+  if result.success?
+    session[:user_id] = result.user_id
+    session[:user_name] = result.user_name
+    redirect back
+  else
+    @error = result[:error]
+    erb :register #What do we do when bad register attempt? Need to stay on page but throw message
+  end
+
   puts params
   erb :register
 end

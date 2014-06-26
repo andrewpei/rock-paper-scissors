@@ -37,7 +37,7 @@ module RPS
       SQL
       @db_adapter.exec(command)
 
-      return RPS::Game.new
+      return RPS::Game.new(new_match['id'].to_i, new_match['p1'].to_i, new_match['p2'].to_i)
     end
 
     def new_round(match_id) #round_moves table
@@ -97,7 +97,8 @@ module RPS
       command = <<-SQL
         SELECT round_moves.id, p1, p1_move, p2, p2_move, round_winner, p1_score, p2_score, round_moves.match_id
         FROM round_moves, match_history
-        WHERE match_history.id = #{match_id} AND round_moves.match_id = #{match_id};
+        WHERE match_history.id = #{match_id} AND round_moves.match_id = #{match_id}
+        ORDER BY round_moves.id DESC;
       SQL
 
       result = @db_adapter.exec(command)
@@ -170,8 +171,8 @@ module RPS
     def retrieve_other_users(user_id)
       command = <<-SQL
         SELECT *
-        FROM users
-        WHERE id <> user_id;
+        FROM users, match_history
+        WHERE users.id NOT IN (user_id, );
       SQL
       users = []
       @db_adapter.exec(command).each { |row|
