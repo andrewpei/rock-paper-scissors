@@ -17,18 +17,26 @@ module RPS
       SQL
 
       result = @db_adapter.exec(command).first
-      return RPS::User.new(result['id'], result['user_name'], result['password'])
+      return RPS::User.new(result['id'].to_i, result['user_name'], result['password'])
     end
 
     def create_game(p1, p2) #round_moves table and match_history table
       command = <<-SQL
-        INSERT INTO match_history(p1, p2)
-        VALUES(#{p1}, #{p2})
+        INSERT INTO match_history(p1, p2, winner)
+        VALUES(#{p1}, #{p2}, 0)
         RETURNING *;
       SQL
 
       result = @db_adapter.exec(command).first
+
       new_round(result['id'].to_i)
+      command = <<-SQL
+        UPDATE round_moves
+        SET p1_score = 0, p2_score = 0
+        WHERE round_moves.match_id = #{result['id'].to_i};
+      SQL
+      @db_adapter.exec(command)
+
       return result['id'].to_i
     end
 
@@ -50,17 +58,17 @@ module RPS
       return result['id'].to_i
     end
 
-    def send_move(p1_move, p2_move, match_id) #round_moves table NOT WORKING YET
-      command = <<-SQL
+
+    def send_move(current_player, player_move, match_id)
+      command = <<-SQL 
         UPDATE round_moves
-        SET  p1_move = '#{p1_move}', p2_move = '#{p2_move}'
+        SET  #{current_player} = '#{player_move}'
         FROM match_history m
         WHERE m.current_round = round_moves.id AND round_moves.match_id = #{match_id}
         RETURNING *;
       SQL
 
-      result = @db_adapter.exec(command).first
-      return result
+      return @db_adapter.exec(command).first
     end
 
     def set_round_outcome(match_id, winner_id, p1_score, p2_score)
@@ -148,6 +156,30 @@ module RPS
       return result
     end
 
+    # def check_existing_game(p1_id, p2_id)
+    #   command = <<-SQL
+    #     SELECT winner
+    #     FROM match_history
+    #     WHERE (p1 = #{p1_id} AND p2 = #{p2_id}) OR (p1 = #{p2_id} AND p2 = #{p1_id});
+    #   SQL
+
+    #   # can't use the first method here
+    #   return @db_adapter.exec(command)
+    # end
+
+    def retrieve_other_users(user_id)
+      command = <<-SQL
+        SELECT *
+        FROM users
+        WHERE id <> user_id;
+      SQL
+      users = []
+      @db_adapter.exec(command).each { |row|
+        users << RPS::User.new(row['id'].to_i, row['user_name'], row['password'], row['matches_won'].to_i, row['matches_lost'].to_i)
+      }
+      return users
+    end
+
     def retrieve_user_match_history(user_id)
       command = <<-SQL
         SELECT id, winner, p1, p2
@@ -168,7 +200,6 @@ module RPS
       SQL
 
       result = @db_adapter.exec(command).first
-      # binding.prys
 
       update_user_wl(result['p1'].to_i, result['winner'].to_i)
       update_user_wl(result['p2'].to_i, result['winner'].to_i)
@@ -198,7 +229,7 @@ module RPS
 
         CREATE TABLE match_history(
           id serial PRIMARY KEY,
-          winner integer REFERENCES users(id),
+          winner integer,
           p1 integer REFERENCES users(id),
           p2 integer REFERENCES users(id)
         );
@@ -207,7 +238,7 @@ module RPS
           id serial PRIMARY KEY,
           p1_move text,
           p2_move text,
-          round_winner integer REFERENCES users(id),
+          round_winner integer,
           p1_score integer,
           p2_score integer,
           match_id integer REFERENCES match_history(id)
