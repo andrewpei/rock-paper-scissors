@@ -1,5 +1,7 @@
 require 'sinatra'
 
+enable :sessions
+
 set :bind, '0.0.0.0'
 
 get '/' do
@@ -8,6 +10,18 @@ get '/' do
 end
 
 post '/' do
+  result = RPS::UserSignIn.run({
+    user_name: params[:user_name],
+    password: params[:password]
+  })
+
+  if result.success?
+    session[:user_id] = result.user.id
+    redirect back
+  else
+    @error = result[:error]
+    erb :login_error
+  end
   puts params
   erb :login
 end
