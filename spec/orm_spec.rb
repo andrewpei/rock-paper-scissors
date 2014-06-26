@@ -55,7 +55,9 @@ describe 'ORM' do
     match_id1 = RPS.orm.create_game(1,2)
     match_id2 = RPS.orm.create_game(1,3)
     match_id3 = RPS.orm.create_game(2,3)
-    result = RPS.orm.send_move('rock', 'paper', match_id1)
+    current_player = 'p1_move'
+    result = RPS.orm.send_move(current_player, 'rock', match_id1)
+    binding.pry
     expect(result['p1_move']).to eq('rock')
   end
 

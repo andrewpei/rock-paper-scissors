@@ -9,5 +9,4 @@ class RPS::User
     @matches_won = matches_won
     @matches_lost = matches_lost
   end
-
 end
