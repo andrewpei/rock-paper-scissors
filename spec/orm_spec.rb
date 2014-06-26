@@ -53,8 +53,10 @@ describe 'ORM' do
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     user3 = RPS.orm.create_user("Jon", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
-    match_id2 = RPS.orm.create_game(1,3)
+    match_id2 = RPS.orm.create_game(2,1)
+    match_id2 = RPS.orm.create_game(2,1)
     match_id3 = RPS.orm.create_game(2,3)
+    binding.pry
     current_player = 'p1_move'
     result = RPS.orm.send_move(current_player, 'rock', match_id1)
     binding.pry
@@ -120,8 +122,8 @@ describe 'ORM' do
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     match_id1 = RPS.orm.create_game(1,2)
     RPS.orm.set_match_winner(match_id1, user1.user_id)
-
     result = RPS.orm.retrieve_user_info(user1.user_id)
     expect(result['matches_won'].to_i).to eq(1)
   end
+
 end

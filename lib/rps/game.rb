@@ -5,7 +5,7 @@ module RPS
 
     @@draw = 0
 
-    def initialize(player1_id, player2_id)
+    def initialize(player1_id, player2_id, p1_score, p2_score, game_over)
       @player1_id = player1_id
       @player2_id = player2_id
       @match_id = RPS.orm.create_game(player1_id, player2_id)
@@ -15,7 +15,6 @@ module RPS
     end
 
     def player_move(player_id, move)
-
       player_id == @player1_id ? current_player = 'p1_move' : current_player = 'p2_move'
       current_round = RPS.orm.send_move(current_player, move, @match_id)
       if !current_round["p1_move"].nil? && !current_round["p2_move"].nil?

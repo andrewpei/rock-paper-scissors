@@ -22,8 +22,8 @@ module RPS
 
     def create_game(p1, p2) #round_moves table and match_history table
       command = <<-SQL
-        INSERT INTO match_history(p1, p2)
-        VALUES(#{p1}, #{p2})
+        INSERT INTO match_history(p1, p2, winner)
+        VALUES(#{p1}, #{p2}, 0)
         RETURNING *;
       SQL
 
@@ -153,16 +153,28 @@ module RPS
       return result
     end
 
-    def check_existing_game(p1_id, p2_id)
+    # def check_existing_game(p1_id, p2_id)
+    #   command = <<-SQL
+    #     SELECT winner
+    #     FROM match_history
+    #     WHERE (p1 = #{p1_id} AND p2 = #{p2_id}) OR (p1 = #{p2_id} AND p2 = #{p1_id});
+    #   SQL
+
+    #   # can't use the first method here
+    #   return @db_adapter.exec(command)
+    # end
+
+    def retrieve_other_users(user_id)
       command = <<-SQL
-        SELECT winner
-        FROM match_history
-        WHERE (p1 = #{p1_id} AND p2 = #{p2_id}) OR (p1 = #{p2_id} AND p2 = #{p1_id});
+        SELECT *
+        FROM users
+        WHERE id <> user_id;
       SQL
-
-      # can't use the first method here
-      return @db_adapter.exec(command)
-
+      users = []
+      @db_adapter.exec(command).each { |row|
+        users << RPS::User.new(row['id'].to_i, row['user_name'], row['password'], row['matches_won'].to_i, row['matches_lost'].to_i)
+      }
+      return users
     end
 
     def retrieve_user_match_history(user_id)
@@ -214,7 +226,7 @@ module RPS
 
         CREATE TABLE match_history(
           id serial PRIMARY KEY,
-          winner integer REFERENCES users(id),
+          winner integer,
           p1 integer REFERENCES users(id),
           p2 integer REFERENCES users(id)
         );

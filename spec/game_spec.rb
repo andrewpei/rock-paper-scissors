@@ -42,7 +42,7 @@ describe "Rock Paper Scissors game" do
     expect(result[0]['round_winner'].to_i).to eq(@andrew.user_id)
   end
 
-  it "finishes the game" do
+  xit "finishes the game" do
     @game.player_move(@andrew.user_id, 'rock')
     @game.player_move(@gabe.user_id, 'rock')
 
@@ -57,7 +57,7 @@ describe "Rock Paper Scissors game" do
     # binding.pry
     @game.player_move(@andrew.user_id, 'scissors')
     result = @game.player_move(@gabe.user_id, 'paper')
-    binding.pry
+    
   end
 
 end
