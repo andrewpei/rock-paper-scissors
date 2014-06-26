@@ -51,7 +51,7 @@ module RPS
     end
 
     def send_move(p1_move, p2_move, match_id) #round_moves table NOT WORKING YET
-      command = <<-SQL 
+      command = <<-SQL
         UPDATE round_moves
         SET  p1_move = '#{p1_move}', p2_move = '#{p2_move}'
         FROM match_history m
@@ -167,10 +167,10 @@ module RPS
 
       result = @db_adapter.exec(command).first
       # binding.prys
-  
+
       update_user_wl(result['p1'].to_i, result['winner'].to_i)
       update_user_wl(result['p2'].to_i, result['winner'].to_i)
-      
+
       return result
     end
 
