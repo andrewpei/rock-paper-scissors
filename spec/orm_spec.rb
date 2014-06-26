@@ -25,7 +25,7 @@ describe 'ORM' do
 
   it "creates a new user properly" do
     user = RPS.orm.create_user("Andrew", "asdf1234")
-    expect(user.name).to eq("Andrew")
+    expect(user.user_name).to eq("Andrew")
     expect(user).to be_a(RPS::User)
   end
 
@@ -48,7 +48,7 @@ describe 'ORM' do
     expect(new_round1).to eq(3)
   end
 
-  it "sends a user's move to the db" do 
+  it "sends a user's move to the db" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
     user2 = RPS.orm.create_user("Gabe", "asdf1234")
     user3 = RPS.orm.create_user("Jon", "asdf1234")
@@ -101,13 +101,15 @@ describe 'ORM' do
 
   it "retrieve's a user's info" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
-    result = RPS.orm.retrieve_user_info(user1.user_id)
-    expect(result['user_name']).to eq("Andrew")
+    result = RPS.orm.retrieve_user_info("Andrew")
+    expect(result).to be_a(RPS::User)
+    expect(result.user_name).to eq("Andrew")
+    expect(result.password).to eq("asdf1234")
   end
 
   it "updates a user's user_name and password" do
     user1 = RPS.orm.create_user("Andrew", "asdf1234")
-    expect(user1.name).to eq('Andrew')
+    expect(user1.user_name).to eq('Andrew')
     result = RPS.orm.update_user_info(user1.user_id, "Gabe", "blag1234")
     expect(result['user_name']).to eq('Gabe')
   end
