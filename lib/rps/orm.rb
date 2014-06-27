@@ -199,7 +199,7 @@ module RPS
 
       users_matches = []
       @db_adapter.exec(command).each { |match|
-        users_matches << Game.new(match['id'], match['p1'], match['p2'], match['p1_score'], match['p2_score'])
+        users_matches << Game.new(match['id'].to_i, match['p1'].to_i, match['p2'].to_i, match['p1_score'].to_i, match['p2_score'].to_i)
       }
       return users_matches
     end

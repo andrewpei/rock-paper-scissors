@@ -56,19 +56,17 @@ end
 get '/dashboard' do
   user_info = {:user_id => session[:user_id], :user_name => session[:user_name]}
   dashboard_data = RPS::RetrieveDashboardData.run(user_info)
-  # binding.pry
   @eligible_opponents = dashboard_data[0]
   @user_info = dashboard_data[1]
   @all_matches = dashboard_data[2]
-  binding.pry
+
   erb :dashboard
 end
 
 post '/dashboard' do
-  # eligible_opponents = dashboard_data[0]
-  # user_info = dashboard_data[1]
-  # all_matches = dashboard_data[2]
-  puts params
+  
+  
+
   erb :dashboard
 end
 

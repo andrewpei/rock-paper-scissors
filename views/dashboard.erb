@@ -2,35 +2,34 @@
 
   <div class="row">
 
-    <div class="large-3 medium-3 columns">
+    <div class="large-4 medium-4 columns">
       <div class="small-6 large-centered columns">
         <div class="row">
           <i class="fi-torso"></i>
         </div>
         <div class="row">
-          <label id="username">Username: </label>
-          <%=@user_info.user_name%>
+          <label id="username">Username: <%=@user_info.user_name%> </label>
         </div>
         <div class="row">
-          <label id="wins">Wins: </label>
-          <%=@user_info.matches_won%>
+          <label id="wins">Wins: <%=@user_info.matches_won%> </label>
         </div>
         <div class="row">
-          <label id="losses">Losses: </label>
-          <%=@user_info.matches_lost%>
+          <label id="losses">Losses: <%=@user_info.matches_lost%> </label>
         </div>
       </div>
     </div>
-
-    <div class="large-9 medium-9 columns" id="games-list">
+<form method="post" action="/dashboard">
+    <div class="large-8 medium-8 columns" id="games-list">
       <div class="row">
         <div class="small-10 large-centered columns">
 
           <h4>All Matches</h4>
           <div class="panel">
-            <ul>
-
-            </ul>
+            <select name="select">
+              <% @all_matches.each { |match| %>
+                <option value=<%=match.display_opponent%>><%= "#{match.match_id}  #{match.display_opponent} #{match.game_status}"%> </option> 
+               <%} %>
+            </select>
           </div>
 
         </div>
@@ -43,18 +42,16 @@
           </ul>
         </div>
       </div>
-
+</form>
       <div class="row">
         <div class="small-10 large-centered columns">
           <h4>Pick an opponent</h4>
           <div class="panel">
-
             <select name="select">
-              <option value="value1">Value 1</option>
-              <option value="value2" selected>Value 2</option>
-              <option value="value3">Value 3</option>
+              <% @eligible_opponents.each { |user| %>
+                <option value=<%=user.user_name%>><%=user.user_name%> </option> 
+               <%} %>
             </select>
-
           </div>
         </div>
       </div>

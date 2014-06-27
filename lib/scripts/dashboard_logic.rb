@@ -4,6 +4,13 @@ class RPS::RetrieveDashboardData
     eligible_opponents = RPS.orm.retrieve_eligible_opponents(input[:user_id])
     user_info = RPS.orm.retrieve_user_info(input[:user_name])
     all_matches = RPS.orm.retrieve_user_match_history(input[:user_id])
+
+    all_matches.each { |match|
+      # binding.pry
+      match.player1_id.to_i == input[:user_id].to_i ? opponent_id = match.player2_id.to_i : opponent_id = match.player1_id.to_i
+      user_name = RPS.orm.retrieve_username(opponent_id)['user_name']
+      match.display_opponent = user_name
+    }
     # binding.pry
     return [eligible_opponents, user_info, all_matches]
   end
@@ -11,15 +18,14 @@ end
 
 class RPS::StartNewGame
   def self.run(input)
-    new_game = RPS.orm.create_game(session[:user_id], input[:opponent_id])
-    #Need to make sure and filter the dashboard data of users to ONLY eligible opponents
+    new_game = RPS.orm.create_game(input[:user_id], input[:opponent_id])
+   
     return new_game
   end
 end
 
 class RPS::ContinueGame
   def self.run(input)
-    #Is this method really needed? It could just pass the match_id to the game page which then retrieves round data
-    #Need an ORM method to retrieve the Game object given a match_id
+   
   end
 end
