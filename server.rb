@@ -1,5 +1,5 @@
 require 'sinatra'
-
+require_relative 'lib/rps.rb'
 enable :sessions
 
 set :bind, '0.0.0.0'
@@ -21,7 +21,7 @@ post '/' do
     redirect back
   else
     @error = result[:error]
-    erb :login #stay on page append error in red 
+    erb :login #stay on page append error in red
   end
   puts params
   erb :login
@@ -58,7 +58,6 @@ get '/dashboard' do
   user_info = dashboard_data[1]
   all_matches = dashboard_data[2]
 
-
   erb :dashboard
 end
 
@@ -69,6 +68,13 @@ end
 
 get '/game' do
   puts params
+  input = {:match_id => 4} # test id
+  game_data = RPS::RetrieveMatchData.run(input)
+  @player1_name = game_data[:p1_name]["user_name"]
+  @player2_name = game_data[:p2_name]["user_name"]
+  @round_data = game_data[:rounds]
+  # @winner = RPS::RetrieveMatchData
+  # binding.pry
   erb :game
 end
 

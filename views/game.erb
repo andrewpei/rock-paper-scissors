@@ -22,19 +22,12 @@
     <div class="large-9 medium-9 columns" id="games-list">
       <div class="row">
         <div class="small-10 large-centered columns">
-          <h4>Game vs. Joe</h4>
+          <h4>Player 1: <%= @player1_name %> vs. Player 2: <%= @player2_name %></h4>
           <div class="panel">
-            <ul>
-              <li>1</li>
-              <li>2</li>
-              <li>3</li>
-              <li>4</li>
-              <li>5</li>
-              <li>6</li>
-              <li>7</li>
-              <li>8</li>
-              <li>9</li>
-              <li>10</li>
+            <ul.disc>
+              <% @round_data.each do |round| %>
+              <li> <%= round["p1_move"] %> vs. <%= round["p2_move"] %>: </li>
+              <% end %>
             </ul>
           </div>
         </div>

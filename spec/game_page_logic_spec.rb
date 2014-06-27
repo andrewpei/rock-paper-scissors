@@ -24,6 +24,7 @@ describe "RPS::RetrieveMatchData" do
     RPS.orm.new_round(match_id)
     RPS.orm.new_round(match_id)
     input = {match_id: match_id}
+    # binding.pry
     result = RPS::RetrieveMatchData.run(input)
     player1_id = result[:rounds][0]["p1"].to_i
     player2_id = result[:rounds][0]["p2"].to_i
