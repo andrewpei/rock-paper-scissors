@@ -56,10 +56,10 @@ describe 'ORM' do
     match_id2 = RPS.orm.create_game(2,1)
     match_id2 = RPS.orm.create_game(2,1)
     match_id3 = RPS.orm.create_game(2,3)
-    
+
     current_player = 'p1_move'
     result = RPS.orm.send_move(current_player, 'rock', match_id1)
-    
+
     expect(result['p1_move']).to eq('rock')
   end
 
@@ -78,7 +78,6 @@ describe 'ORM' do
     RPS.orm.new_round(match_id1)
 
     outcome = RPS.orm.retrieve_current_round(match_id1)
-    # binding.pry
     expect(outcome['id'].to_i).to eq(2)
   end
 
@@ -89,12 +88,20 @@ describe 'ORM' do
     match_id1 = RPS.orm.create_game(1,2)
     match_id3 = RPS.orm.create_game(2,3)
     match_id3 = RPS.orm.create_game(2,3)
+    binding.pry
 
     RPS.orm.new_round(match_id1)
     RPS.orm.new_round(match_id1)
 
     outcome = RPS.orm.retrieve_all_rounds(match_id1)
     expect(outcome.size).to eq(3)
+  end
+
+  it "retrieves a user_name when provided a user_id" do
+    RPS.orm.create_user("Andrew", "asdf1234")
+    result = RPS.orm.retrieve_username(1)
+
+    expect(result["user_name"]).to eq("Andrew")
   end
 
   it "sets the winner of the match" do
@@ -143,8 +150,6 @@ describe 'ORM' do
     match_id5 = RPS.orm.create_game(5,1)
     RPS.orm.set_match_winner(match_id1.match_id, user1.user_id)
     RPS.orm.set_match_winner(match_id5.match_id, user5.user_id)
-    binding.pry
-
   end
 
 end
