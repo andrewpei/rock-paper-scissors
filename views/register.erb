@@ -6,16 +6,19 @@
     </div>
     <form method="post" action="/register">
       <div class="row">
-        <input type="text" placeholder="Username" id="username-field" name="english"/>
+        <input type="text" placeholder="Username" id="blah" name="user_name"/>
       </div>
       <div class="row">
-        <input type="text" placeholder="Password" id="password" name="english" />
+        <input type="text" placeholder="Password" id="blah" name="password" />
       </div>
       <div class="row">
         <input class="button" type="submit" value="Sign Up">
       </div>
       <div class="row">
-        Already registered? <a href="/">Start playing.</a>
+        Already registered? <a href="/">Login Here</a>
+        <% if !@error.nil? %>
+           <p><%= @error %></p>
+         <% end %>    
       </div>
     </form>
   </div>

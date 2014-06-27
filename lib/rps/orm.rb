@@ -117,8 +117,9 @@ module RPS
         WHERE user_name = '#{user_name}';
       SQL
       result = @db_adapter.exec(command).first
+      # binding.pry
       if result != nil
-        return RPS::User.new(result['id'], result['user_name'], result['password'])
+        return RPS::User.new(result['id'].to_i, result['user_name'], result['password'])
       end
     end
 
@@ -157,22 +158,11 @@ module RPS
       return result
     end
 
-    # def check_existing_game(p1_id, p2_id)
-    #   command = <<-SQL
-    #     SELECT winner
-    #     FROM match_history
-    #     WHERE (p1 = #{p1_id} AND p2 = #{p2_id}) OR (p1 = #{p2_id} AND p2 = #{p1_id});
-    #   SQL
-
-    #   # can't use the first method here
-    #   return @db_adapter.exec(command)
-    # end
-
     def retrieve_eligible_opponents(user_id)
       command = <<-SQL
         SELECT *
-        FROM users, match_history
-        WHERE users.id NOT IN (user_id);
+        FROM users
+        WHERE users.id <> #{user_id};
       SQL
       users = []
       @db_adapter.exec(command).each { |row|
@@ -228,8 +218,8 @@ module RPS
       command = <<-SQL
         CREATE TABLE users(
           id serial PRIMARY KEY,
-          user_name text,
-          password text,
+          user_name text not null,
+          password text not null,
           matches_won integer,
           matches_lost integer
         );

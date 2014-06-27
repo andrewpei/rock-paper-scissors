@@ -8,13 +8,16 @@
           <i class="fi-torso"></i>
         </div>
         <div class="row">
-          <label id="username">User: </label>
+          <label id="username">Username: </label>
+          <%=@user_info.user_name%>
         </div>
         <div class="row">
           <label id="wins">Wins: </label>
+          <%=@user_info.matches_won%>
         </div>
         <div class="row">
           <label id="losses">Losses: </label>
+          <%=@user_info.matches_lost%>
         </div>
       </div>
     </div>
@@ -23,19 +26,10 @@
       <div class="row">
         <div class="small-10 large-centered columns">
 
-          <h4>Games</h4>
+          <h4>All Matches</h4>
           <div class="panel">
             <ul>
-              <li>1</li>
-              <li>2</li>
-              <li>3</li>
-              <li>4</li>
-              <li>5</li>
-              <li>6</li>
-              <li>7</li>
-              <li>8</li>
-              <li>9</li>
-              <li>10</li>
+
             </ul>
           </div>
 
@@ -45,14 +39,14 @@
       <div class="small-3 large-centered columns">
         <div class="row">
           <ul class="button-group radius">
-            <li><a href="#" class="small button">Select Game</a></li>
+            <li><a href="#" class="small button">View Game</a></li>
           </ul>
         </div>
       </div>
 
       <div class="row">
         <div class="small-10 large-centered columns">
-          <h4>Users</h4>
+          <h4>Pick an opponent</h4>
           <div class="panel">
 
             <select name="select">

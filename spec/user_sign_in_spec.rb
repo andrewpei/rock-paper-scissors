@@ -2,7 +2,6 @@ require 'spec_helper'
 require_relative '../lib/scripts/user_sign_in.rb'
 
 describe 'UserSignIn' do
-
   before(:all) do
     RPS.orm.instance_variable_set(:@db_adapter, PG.connect(host: 'localhost', dbname: 'rps-db-test'))
     RPS.orm.create_tables

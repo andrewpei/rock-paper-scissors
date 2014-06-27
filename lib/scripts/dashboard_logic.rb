@@ -1,9 +1,10 @@
 class RPS::RetrieveDashboardData
   def self.run(input)
+    # binding.pry
     eligible_opponents = RPS.orm.retrieve_eligible_opponents(input[:user_id])
     user_info = RPS.orm.retrieve_user_info(input[:user_name])
     all_matches = RPS.orm.retrieve_user_match_history(input[:user_id])
-
+    # binding.pry
     return [eligible_opponents, user_info, all_matches]
   end
 end
