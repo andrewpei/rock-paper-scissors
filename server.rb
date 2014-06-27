@@ -64,7 +64,7 @@ get '/dashboard' do
 end
 
 post '/dashboard' do
-  
+  RPS::Start
   
 
   erb :dashboard
