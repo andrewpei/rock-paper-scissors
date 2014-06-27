@@ -1,8 +1,14 @@
 class RPS::RetrieveMatchData
   def self.run(input)
     all_rounds = RPS.orm.retrieve_all_rounds(input[:match_id])
-    #rounds should be sorted here, play around with order by in the orm method
-    return all_rounds
+
+    p1_id = all_rounds.first["p1"].to_i
+    p2_id = all_rounds.first["p2"].to_i
+
+    p1_name = RPS.orm.retrieve_username(p1_id)
+    p2_name = RPS.orm.retrieve_username(p2_id)
+
+    { :success? => true, :p1_name => p1_name, :p2_name => p2_name, :rounds => all_rounds }
   end
 end
 
@@ -13,8 +19,7 @@ class RPS::SendMove
     match_id = input[:match_id]
     player_id = session[:user_id]
 
-    #Need to gather match_id, move being made, player ID 
-
+    #Need to gather match_id, move being made, player ID
   end
 
 end
@@ -42,7 +47,7 @@ end
 #   }
 
 #   round_winner_id = @rules[player1_move][player2_move]
-  
+
 #   if round_winner_id == @player1_id
 #     @p1_score += 1
 #   elsif round_winner_id == @player2_id
@@ -60,7 +65,7 @@ end
 #   end
 
 #   RPS.orm.set_round_outcome(@match_id, round_winner_id, @p1_score, @p2_score)
-  
+
 #   if @game_over
 #     return end_game(match_winner_id, match_loser_id, @p1_score, @p2_score)
 #   else

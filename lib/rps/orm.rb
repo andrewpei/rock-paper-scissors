@@ -60,7 +60,7 @@ module RPS
 
 
     def send_move(current_player, player_move, match_id)
-      command = <<-SQL 
+      command = <<-SQL
         UPDATE round_moves
         SET  #{current_player} = '#{player_move}'
         FROM match_history m
@@ -101,12 +101,19 @@ module RPS
         ORDER BY round_moves.id DESC;
       SQL
 
+      # command = <<-SQL
+      #   SELECT *
+      #   FROM round_moves
+      #   INNER JOIN match_history ON round_moves.match_id = match_history.id
+      #   INNER JOIN users ON users.id = match_history.p1 OR users.id = match_history.p2
+      #   WHERE round_moves.match_id = #{match_id};
+      # SQL
+
       result = @db_adapter.exec(command)
       output = []
       result.each { |row|
         output << row
       }
-      # binding.pry
       return output
     end
 
@@ -154,7 +161,16 @@ module RPS
       end
 
       result = @db_adapter.exec(command).first
-      # binding.pry
+      return result
+    end
+
+    def retrieve_username(user_id)
+      command = <<-SQL
+        SELECT user_name
+        FROM users
+        WHERE users.id = #{user_id};
+      SQL
+      result = @db_adapter.exec(command).first
       return result
     end
 
@@ -173,7 +189,7 @@ module RPS
 
     def retrieve_user_match_history(user_id)
       command = <<-SQL
-        select * 
+        select *
         From match_history
         inner join round_moves
         on match_history.id = round_moves.match_id

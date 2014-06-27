@@ -1,7 +1,6 @@
 class RPS::UserSignIn
   def self.run(input)
     user = RPS.orm.retrieve_user_info(input[:user_name])
-    # binding.pry
     if user.nil?
       return { :success? => false, :error => "No user found, please sign up!" }
     end
